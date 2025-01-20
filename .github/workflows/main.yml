@@ -9,7 +9,6 @@ jobs:
       - self-hosted    # Ensures the job runs on a self-hosted runner
       - Linux          # Targets a Linux machine
       - X64            # Specify that it should run on a 64-bit machine
-      - ansible      # Ensure it runs specifically on your "sb-runner" self-hosted runner
 
     steps:
       # Step 1: Checkout repository code
