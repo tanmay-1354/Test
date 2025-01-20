@@ -1,9 +1,7 @@
 name: Run Ansible Playbook on EC2 (Self-Hosted Runner)
 
 on:
-  push:
-    branches:
-      - main  # Trigger the workflow when changes are pushed to the main branch
+   workflow_dispatch:
 
 jobs:
   ansible:
