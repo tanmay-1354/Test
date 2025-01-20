@@ -1,1 +1,28 @@
-sgdg
+name: Run Ansible Playbook on EC2 (Self-Hosted Runner)
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow when changes are pushed to the main branch
+
+jobs:
+  ansible:
+    runs-on:
+      - self-hosted    # Ensures the job runs on a self-hosted runner
+      - Linux          # Targets a Linux machine
+      - X64            # Specify that it should run on a 64-bit machine
+      - ansible      # Ensure it runs specifically on your "sb-runner" self-hosted runner
+
+    steps:
+      # Step 1: Checkout repository code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Vault password for Ansible
+      - name: Set up Vault password
+        run: echo "${{ secrets.VAULT_PASSWORD }}" > vault-password.txt
+
+      # Step 3: Run the Ansible playbook
+      - name: Run Ansible Playbook on EC2
+        run: |
+          ansible-playbook --vault-password-file=vault-password.txt -i /home/ubuntu/code/inventory /home/ubuntu/code/web.yml
