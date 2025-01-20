@@ -1,14 +1,16 @@
 name: Run Ansible Playbook on EC2 (Self-Hosted Runner)
 
 on:
-   workflow_dispatch:
+  push:
+    branches:
+      - main  # Trigger the workflow when changes are pushed to the main branch
 
 jobs:
   ansible:
     runs-on:
-      - self-hosted    # Ensures the job runs on a self-hosted runner
-      - Linux          # Targets a Linux machine
-      - X64            # Specify that it should run on a 64-bit machine
+      - self-hosted
+      - Linux
+      - X64
 
     steps:
       # Step 1: Checkout repository code
@@ -19,7 +21,19 @@ jobs:
       - name: Set up Vault password
         run: echo "${{ secrets.VAULT_PASSWORD }}" > vault-password.txt
 
-      # Step 3: Run the Ansible playbook
+      # Step 3: Debugging - Check vault-password.txt file
+      - name: Check vault-password.txt contents
+        run: cat vault-password.txt
+
+      # Step 4: Check permissions of vault-password.txt
+      - name: Check vault-password.txt permissions
+        run: ls -l vault-password.txt
+
+      # Step 5: Remove any extra spaces or newlines from the password file
+      - name: Sanitize vault-password.txt
+        run: sed -i 's/[[:space:]]*$//' vault-password.txt
+
+      # Step 6: Run Ansible Playbook on EC2
       - name: Run Ansible Playbook on EC2
         run: |
           ansible-playbook --vault-password-file=vault-password.txt -i /home/ubuntu/code/inventory /home/ubuntu/code/web.yml
