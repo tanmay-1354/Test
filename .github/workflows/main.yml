@@ -1,37 +1,28 @@
-name: Run Ansible Playbook on EC2 (Self-Hosted Runner)
+name: Run Ansible Playbook
 
 on:
-   workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  ansible:
-    runs-on:
+  ansible-deploy:
+    runs-on: 
       - self-hosted
       - Linux
-      - X64
+      - X64  # Match the labels of your runner
 
     steps:
-      # Step 1: Checkout repository code
-      - name: Checkout repository
+      # Step 1: Checkout the repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Vault password for Ansible
-      - name: Set up Vault password
-        run: echo "${{ secrets.VAULT_PASSWORD }}" > vault-password.txt
+      # Step 2: Create a Vault Password File
+      - name: Create vault password file
+        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /tmp/vault_password
 
-      # Step 3: Debugging - Check vault-password.txt file
-      - name: Check vault-password.txt contents
-        run: cat vault-password.txt
-
-      # Step 4: Check permissions of vault-password.txt
-      - name: Check vault-password.txt permissions
-        run: ls -l vault-password.txt
-
-      # Step 5: Remove any extra spaces or newlines from the password file
-      - name: Sanitize vault-password.txt
-        run: sed -i 's/[[:space:]]*$//' vault-password.txt
-
-      # Step 6: Run Ansible Playbook on EC2
-      - name: Run Ansible Playbook on EC2
+      # Step 3: Run the Ansible Playbook
+      - name: Run Ansible Playbook
         run: |
-          ansible-playbook --vault-password-file=vault-password.txt -i /home/ubuntu/code/inventory /home/ubuntu/code/web.yml
+          ansible-playbook --vault-password-file /tmp/vault_password web.yml
