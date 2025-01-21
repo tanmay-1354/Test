@@ -22,7 +22,12 @@ jobs:
       - name: Create vault password file
         run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /tmp/vault_password
 
-      # Step 3: Run the Ansible Playbook
+      # Step 3: Change directory to /home/ubuntu/code
+      - name: Change directory to /home/ubuntu/code
+        run: cd /home/ubuntu/code
+
+      # Step 4: Run the Ansible Playbook
       - name: Run Ansible Playbook
         run: |
+          cd /home/ubuntu/code  # Ensure we're in the correct directory
           ansible-playbook --vault-password-file /tmp/vault_password web.yml
