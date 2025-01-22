@@ -63,7 +63,21 @@ jobs:
           scp -i private_key.pem "$ZIP_FILE" ubuntu@$REMOTE_IP:/home/ubuntu/gitzip
           rm private_key.pem
 
-      # Step 7: Clear and Unzip the file in /var/www/html on the remote server
+      # Step 7: Ensure `unzip` is installed on the remote server
+      - name: Install `unzip` on remote server
+        env:
+          REMOTE_IP: ${{ secrets.REMOTE_SERVER_IP }}
+          PRIVATE_KEY: ${{ secrets.REMOTE_SERVER_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+
+          # Install unzip if not already installed
+          ssh -i private_key.pem ubuntu@$REMOTE_IP "sudo apt-get update && sudo apt-get install -y unzip"
+
+          rm private_key.pem
+
+      # Step 8: Clear and Unzip the file in /var/www/html on the remote server
       - name: Deploy and unzip on remote server
         env:
           REMOTE_IP: ${{ secrets.REMOTE_SERVER_IP }}
