@@ -40,7 +40,23 @@ jobs:
           ZIP_NAME="unidq_$TIMESTAMP.zip"
           zip -r /home/ubuntu/git/$ZIP_NAME .
 
-      # Step 5: Transfer the zip file to the remote server
+      # Step 5: Clean the target directory on the remote server
+      - name: Clean remote directory
+        env:
+          REMOTE_IP: ${{ secrets.REMOTE_SERVER_IP }}
+          PRIVATE_KEY: ${{ secrets.REMOTE_SERVER_KEY }}
+        run: |
+          # Create SSH key and set permissions
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+
+          # Remove old files from the target directory
+          ssh -i private_key.pem ubuntu@$REMOTE_IP "rm -rf /home/ubuntu/gitziploctation/*"
+
+          # Cleanup the private key
+          rm private_key.pem
+
+      # Step 6: Transfer the new zip file to the remote server
       - name: Transfer zip file to remote server
         env:
           REMOTE_IP: ${{ secrets.REMOTE_SERVER_IP }}
@@ -53,7 +69,7 @@ jobs:
           chmod 600 private_key.pem
           
           # Transfer the file using SCP
-          scp -i private_key.pem "$ZIP_FILE" ubuntu@$REMOTE_IP:/home/ubuntu/gitzip
+          scp -i private_key.pem "$ZIP_FILE" ubuntu@$REMOTE_IP:/home/ubuntu/gitziploctation
 
           # Cleanup the private key
           rm private_key.pem
