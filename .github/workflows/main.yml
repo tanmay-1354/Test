@@ -22,13 +22,22 @@ jobs:
       - name: Install zip utility
         run: sudo apt-get update && sudo apt-get install -y zip
 
-      # Step 3: Generate a unique timestamp and zip the repository
+      # Step 3: Delete the old zip file if it exists
+      - name: Delete old zip file (if exists)
+        run: |
+          OLD_ZIP=$(ls /home/ubuntu/git/unidq_*.zip | head -n 1)  # Get the most recent zip file
+          if [ -f "$OLD_ZIP" ]; then
+            echo "Deleting old zip file: $OLD_ZIP"
+            rm "$OLD_ZIP"  # Remove the old zip file
+          fi
+
+      # Step 4: Generate a unique timestamp and zip the repository
       - name: Zip the repository with a unique name
         run: |
           TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # Generate a unique timestamp
           ZIP_NAME="unidq_$TIMESTAMP.zip"      # Create the unique zip file name
           zip -r /home/ubuntu/git/$ZIP_NAME .   # Zip the repository with the unique name
 
-      # Step 4: Verify the zip file creation
+      # Step 5: Verify the zip file creation
       - name: List the contents of the target directory
         run: ls -l /home/ubuntu/git
