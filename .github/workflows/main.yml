@@ -1,33 +1,32 @@
-name: Run Ansible Playbook
+name: Clone and Zip Repository
 
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on pushes to the main branch
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
   ansible-deploy:
     runs-on: 
-      - self-hosted
+      - self-hosted  # Use self-hosted runner
       - Linux
       - X64  # Match the labels of your runner
 
     steps:
       # Step 1: Checkout the repository
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Create a Vault Password File
-      - name: Create vault password file
-        run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > /tmp/vault_password
+      # Step 2: Install zip utility (if not installed)
+      - name: Install zip utility
+        run: sudo apt-get update && sudo apt-get install -y zip
 
-      # Step 3: Change directory to /home/ubuntu/code
-      - name: Change directory to /home/ubuntu/code
-        run: cd /home/ubuntu/code
-
-      # Step 4: Run the Ansible Playbook
-      - name: Run Ansible Playbook
+      # Step 3: Zip the repository with the name "unidq.zip" in the specified directory
+      - name: Zip the repository
         run: |
-          cd /home/ubuntu/code  # Ensure we're in the correct directory
-          ansible-playbook --vault-password-file /tmp/vault_password web.yml
+          zip -r /home/ubuntu/git/unidq.zip .
+
+      # Step 4: Verify the zip file creation
+      - name: List the contents of the target directory
+        run: ls -l /home/ubuntu/git
