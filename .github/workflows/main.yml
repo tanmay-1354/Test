@@ -22,10 +22,12 @@ jobs:
       - name: Install zip utility
         run: sudo apt-get update && sudo apt-get install -y zip
 
-      # Step 3: Zip the repository with the name "unidq.zip" in the specified directory
-      - name: Zip the repository
+      # Step 3: Generate a unique timestamp and zip the repository
+      - name: Zip the repository with a unique name
         run: |
-          zip -r /home/ubuntu/git/unidq.zip .
+          TIMESTAMP=$(date +'%Y%m%d%H%M%S')  # Generate a unique timestamp
+          ZIP_NAME="unidq_$TIMESTAMP.zip"      # Create the unique zip file name
+          zip -r /home/ubuntu/git/$ZIP_NAME .   # Zip the repository with the unique name
 
       # Step 4: Verify the zip file creation
       - name: List the contents of the target directory
