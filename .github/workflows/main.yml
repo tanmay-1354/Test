@@ -51,7 +51,7 @@ jobs:
           chmod 600 private_key.pem
 
           # Remove old files from the target directory
-          ssh -i private_key.pem ubuntu@$REMOTE_IP "rm -rf /home/ubuntu/gitziploctation/*"
+          ssh -i private_key.pem ubuntu@$REMOTE_IP "rm -rf /home/ubuntu/gitzip/*"
 
           # Cleanup the private key
           rm private_key.pem
@@ -69,7 +69,7 @@ jobs:
           chmod 600 private_key.pem
           
           # Transfer the file using SCP
-          scp -i private_key.pem "$ZIP_FILE" ubuntu@$REMOTE_IP:/home/ubuntu/gitziploctation
+          scp -i private_key.pem "$ZIP_FILE" ubuntu@$REMOTE_IP:/home/ubuntu/gitzip
 
           # Cleanup the private key
           rm private_key.pem
