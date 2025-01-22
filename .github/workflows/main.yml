@@ -18,19 +18,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Install zip and SSH utilities (if not installed)
+      # Step 2: Install unzip and git utilities (if not installed)
       - name: Install required utilities
         run: |
           sudo apt-get update
-          sudo apt-get install -y zip ssh
+          sudo apt-get install -y unzip git
 
       # Step 3: Delete the old zip file if it exists
       - name: Delete old zip file (if exists)
         run: |
-          OLD_ZIP=$(ls /home/ubuntu/git/unidq_*.zip | head -n 1)
+          OLD_ZIP=$(ls /home/ubuntu/git/unidq_*.zip 2>/dev/null | head -n 1)
           if [ -f "$OLD_ZIP" ]; then
             echo "Deleting old zip file: $OLD_ZIP"
             rm "$OLD_ZIP"
+          else
+            echo "No old zip file found."
           fi
 
       # Step 4: Generate a unique timestamp and zip the repository
